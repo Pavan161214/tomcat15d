@@ -1,0 +1,23 @@
+pipeline{
+    agent any
+    stages{
+        stage('cloning'){
+            steps{
+                echo 'cloning code from git repo'
+                git branch: 'main', url: 'https://github.com/Pavan161214/tomcat15d.git'
+            }
+        }
+        stage('building'){
+            steps{
+                echo 'code will be builded and maven artifact will be generated'
+                sh 'mvn clean install'
+            }
+        }
+        stage('deploying'){
+            steps{
+                echo 'deploying code to tomcat'
+                deploy adapters: [tomcat9(credentialsId: 'tomcat-1234', path: '', url: 'http://ec2-35-172-119-74.compute-1.amazonaws.com:8080/')], contextPath: 'thiru', war: '**/*.war'
+            }
+        }
+    }
+}
